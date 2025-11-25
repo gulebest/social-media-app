@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  username    String   @unique
+  email       String   @unique
+  password    String
+  bio         String?
+  image       String?
+  imagePublic String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  // Relations
+  profile   Profile? @relation("UserProfile")
+  profileId String?  @unique @db.ObjectId // Unique here makes one-to-one
+
+  posts    Post[]    @relation("UserPosts")
+  comments Comment[] @relation("UserComments")
+  likes    Like[]    @relation("UserLikes")
+
+  followers Follow[] @relation("Followers")
+  following Follow[] @relation("Following")
+
+  notificationsReceived Notification[] @relation("NotificationsReceived")
+  notificationsSent     Notification[] @relation("NotificationsSent")
+
+  @@map("Users")
+}
+
+model Profile {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  bio    String?
+  avatar String?
+
+  // Relations
+  user   User   @relation("UserProfile", fields: [userId], references: [id])
+  userId String @unique @db.ObjectId
+
+  @@map("Profiles")
+}
+
+// Post Model
+model Post {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  text        String?
+  image       String?
+  imagePublic String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user   User   @relation("UserPosts", fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  comments      Comment[]      @relation("PostComments")
+  likes         Like[]         @relation("PostLikes")
+  notifications Notification[] @relation("PostNotifications")
+
+  @@map("Posts")
+}
+
+// Comment Model
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  postId    String   @db.ObjectId
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  // Relations
+  post Post @relation("PostComments", fields: [postId], references: [id])
+  user User @relation("UserComments", fields: [userId], references: [id])
+
+  @@map("Comments")
+}
+
+// Like Model
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  // Relations
+  post Post @relation("PostLikes", fields: [postId], references: [id])
+  user User @relation("UserLikes", fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+  @@map("Likes")
+}
+
+// Follow Model
+model Follow {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+
+  // Relations
+  follower   User   @relation("Following", fields: [followerId], references: [id])
+  followerId String @db.ObjectId
+
+  following   User   @relation("Followers", fields: [followingId], references: [id])
+  followingId String @db.ObjectId
+
+  @@unique([followerId, followingId])
+  @@map("Follows")
+}
+
+// Notification Model
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  type      String // e.g., "like", "comment", "follow"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  receiverId String  @db.ObjectId
+  senderId   String  @db.ObjectId
+  postId     String? @db.ObjectId
+
+  // Relations
+  receiver User  @relation("NotificationsReceived", fields: [receiverId], references: [id])
+  sender   User  @relation("NotificationsSent", fields: [senderId], references: [id])
+  post     Post? @relation("PostNotifications", fields: [postId], references: [id])
+
+  @@map("Notifications")
+}
