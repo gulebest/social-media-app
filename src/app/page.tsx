@@ -1,8 +1,13 @@
-import Image from "next/image";
-import prisma from '@/lib/prisma'
-
-export default function Home() {
+// app/page.tsx
+export default function HomePage() {
   return (
-    <p>Home</p>
+    <main className="min-h-screen px-6 py-10">
+      <h1 className="text-5xl font-bold text-primary mb-4">
+        Home
+      </h1>
+      <p className="text-dark-2 text-lg">
+        Welcome to your app!
+      </p>
+    </main>
   );
 }

@@ -1,1 +1,41 @@
-@import "tailwindcss";
+/* src/app/globals.css */
+
+
+/* Make Tailwind utilities available to CSS modules and JSX */
+
+@reference "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme variables */
+
+:root {
+    --color-dark-1: #000000;
+    --color-dark-2: #09090a;
+    --color-dark-3: #101012;
+    --color-dark-4: #1f1f22;
+    --color-primary: #5d5fef;
+}
+
+
+/* Global dark theme */
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background-color: var(--color-dark-1);
+    font-family: var(--font-geist-sans);
+    color: white;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* Code font */
+
+code,
+pre {
+    font-family: var(--font-geist-mono);
+}
