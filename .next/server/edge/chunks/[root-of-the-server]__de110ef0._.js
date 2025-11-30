@@ -21,7 +21,6 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-// src/middleware.ts
 __turbopack_context__.s({
     "config": (()=>config),
     "middleware": (()=>middleware)
@@ -38,8 +37,10 @@ async function middleware(req) {
         secret: process.env.NEXTAUTH_SECRET
     });
     const { pathname } = req.nextUrl;
-    // Allow public paths
-    if (pathname.startsWith("/signin") || pathname.startsWith("/signup")) {
+    // Allow public paths (frontend pages)
+    if (pathname.startsWith("/signin") || pathname.startsWith("/signup") || pathname.startsWith("/api/auth/register") || // Allow registration API
+    pathname.startsWith("/api/auth/login") // Allow login API
+    ) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
     }
     // Redirect to sign-in if not logged in
@@ -52,8 +53,10 @@ async function middleware(req) {
 }
 const config = {
     matcher: [
+        "/",
         "/home/:path*",
-        "/dashboard/:path*"
+        "/home/:path*",
+        "/api/:path*"
     ]
 };
 }}),

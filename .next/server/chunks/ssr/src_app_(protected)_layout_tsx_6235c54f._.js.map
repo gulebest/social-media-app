@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/hp/Documents/my%20first%20web/PHASE-4/Projects/Social%20Media%20App/social-app/src/app/%28protected%29/layout.tsx"],"sourcesContent":["// layout.tsx\r\nimport React from \"react\";\r\n\r\nexport default async function Layout({\r\n  children,\r\n}: Readonly<{\r\n  children: React.ReactNode\r\n}>) {\r\n    const session = await auth();\r\n    if (!session) {\r\n        redirect(\"/\");\r\n\r\n    }\r\n  return (\r\n    <>\r\n    {children}\r\n    </>\r\n  );\r\n}\r\n"],"names":[],"mappings":"AAAA,aAAa;;;;;;AAGE,eAAe,OAAO,EACnC,QAAQ,EAGR;IACE,MAAM,UAAU,MAAM;IACtB,IAAI,CAAC,SAAS;QACV,SAAS;IAEb;IACF,qBACE;kBACC;;AAGL","debugId":null}}]
+}

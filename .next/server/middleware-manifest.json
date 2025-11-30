@@ -11,12 +11,20 @@
       "page": "/",
       "matchers": [
         {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/(\\/?index|\\/?index\\\\.json))?[\\/#\\?]?$",
+          "originalSource": "/"
+        },
+        {
           "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/home(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
           "originalSource": "/home/:path*"
         },
         {
-          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/dashboard(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
-          "originalSource": "/dashboard/:path*"
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/home(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/home/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/api(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/api/:path*"
         }
       ],
       "wasm": [],
@@ -24,9 +32,9 @@
       "env": {
         "__NEXT_BUILD_ID": "development",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "nUZoXWj/0DNNtEcnPh7VfUiFTqAgh3CkJFraec3rSag=",
-        "__NEXT_PREVIEW_MODE_ID": "5285b6012e581f67061750518a27d688",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "2ea313abd3d6cc66a7b726f77ec4c6f8cd52e2a7d02b06c02d6a250655177bc1",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "d0e5b14237737fa79b90ab1462b39c207647ef0765ffd4813e3c20a5e569dc0d"
+        "__NEXT_PREVIEW_MODE_ID": "a424f532184c9b7585f83a4180291c06",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "18c16d11542bfbf4b4ad25a59c543f867bfefc51cfe1584cd69d8b3a405bded6",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "26477686c7256241f6330658b41e0d6c4f230ef904f92f8c01a104a2c2036d4a"
       }
     }
   },

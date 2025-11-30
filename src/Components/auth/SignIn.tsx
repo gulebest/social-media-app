@@ -8,7 +8,7 @@ import Link from "next/link";
 import { TiSocialInstagramCircular } from "react-icons/ti";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import "../../src/app/globals.css";
+
 
 // Validation schema
 const signInSchema = z.object({
@@ -51,7 +51,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center bg-[var(--color-dark-1)] px-4">
+    <div className="h-screen flex justify-center items-center bg-[var(--color-dark-1)] px-4 py-8">
       <div className="w-full max-w-sm bg-[var(--color-dark-2)] rounded-2xl shadow-xl p-8">
 
         {/* Logo */}

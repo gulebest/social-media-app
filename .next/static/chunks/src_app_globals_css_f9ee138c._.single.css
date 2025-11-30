@@ -160,6 +160,14 @@
   background-color: var(--color-blue-600, oklch(54.6% .245 262.881));
 }
 
+.bg-gray-900 {
+  background-color: var(--color-gray-900, oklch(21% .034 264.665));
+}
+
+.p-4 {
+  padding: calc(var(--spacing, .25rem) * 4);
+}
+
 .p-8 {
   padding: calc(var(--spacing, .25rem) * 8);
 }
@@ -182,6 +190,10 @@
 
 .py-4 {
   padding-block: calc(var(--spacing, .25rem) * 4);
+}
+
+.py-8 {
+  padding-block: calc(var(--spacing, .25rem) * 8);
 }
 
 .py-10 {

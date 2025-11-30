@@ -104,8 +104,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__
 ;
 async function POST(req) {
     try {
-        const body = await req.json();
-        const { fullName, username, email, password } = body;
+        const { fullName, username, email, password } = await req.json();
         if (!fullName || !username || !email || !password) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "All fields are required"
@@ -127,7 +126,7 @@ async function POST(req) {
         });
         if (existingUser) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: "Sign up failed"
+                error: "User already exists"
             }, {
                 status: 409
             });
