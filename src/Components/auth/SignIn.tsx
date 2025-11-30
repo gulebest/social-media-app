@@ -1,116 +1,103 @@
 "use client";
-
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { TiSocialInstagramCircular } from "react-icons/ti";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { TiSocialInstagramCircular } from "react-icons/ti";
+import z from "zod";
 
-
-// Validation schema
-const signInSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+const loginSchema = z.object({
+  email: z.email("Invalid email address!"),
+  password: z.string().min(6, "Password must be at least 6 characters!"),
 });
 
-type SignInInputs = z.infer<typeof signInSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function SignIn() {
+export default function SigninComponent() {
   const router = useRouter();
-  const [serverError, setServerError] = useState<string | null>(null);
-
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isSubmitting },
-  } = useForm<SignInInputs>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: SignInInputs) => {
-    setServerError(null);
-
+  const onSubmit = async (data: LoginFormData) => {
     const result = await signIn("credentials", {
-      redirect: false,
       email: data.email,
       password: data.password,
+      redirect: false,
     });
 
-    if (result?.error) {
-      setServerError("Invalid email or password.");
-      setTimeout(() => setServerError(null), 5000);
-      return;
+    if (result.error) {
+      setError("root", {
+        message: "Invalid Credentials",
+      });
+    } else {
+      reset();
+      router.replace("/home");
     }
-
-    reset();
-    router.push("/home"); // redirect after successful login
   };
-
   return (
-    <div className="h-screen flex justify-center items-center bg-[var(--color-dark-1)] px-4 py-8">
-      <div className="w-full max-w-sm bg-[var(--color-dark-2)] rounded-2xl shadow-xl p-8">
-
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
+    <div className="h-screen flex justify-center items-center">
+      <div className="max-w-[320px] w-[90%]">
+        {/* logo */}
+        <div className="flex items-center gap-2 justify-center mb-8">
           <TiSocialInstagramCircular size={40} color="#5D5FEF" />
-          <span className="text-3xl font-semibold tracking-wide text-gray-300">Circle</span>
+          <span className="text-3xl font-semibold tracking-wide text-gray-400">
+            Circle
+          </span>
         </div>
-
-        <h2 className="text-center text-3xl font-bold text-gray-100 mb-2">Sign In</h2>
-        <p className="text-center text-gray-400 mb-6 text-sm">
-          Welcome back! Please enter your credentials
+        {/* heading */}
+        <h2 className="text-center text-3xl font-semibold mb-3 text-gray-200">
+          Signin to your account
+        </h2>
+        <p className="text-gray-500 text-center text-sm">
+          To use circle, Please enter your details
         </p>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center mx-auto w-full max-w-[260px]"
-        >
+        {/* form */}
+        <form className="my-10"onSubmit={handleSubmit(onSubmit)}>
+          {errors.root && (
+            <p className="bg-primary py-2 text-center text-white">
+              {errors.root.message}
+            </p>
+          )}
           <input
-            type="email"
-            placeholder="Email"
             {...register("email")}
-            className="w-full mb-2 px-4 py-3 rounded-lg bg-[var(--color-dark-3)]
-                       text-gray-100 placeholder-gray-500 border border-white/10
-                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500
-                       outline-none transition shadow-sm hover:shadow-md"
+            type="text"
+            placeholder="Email Address"
+            className="w-full px-4 py-3 placeholder-text-gray-400 bg-dark-3 rounded-lg outline-none text-gray-100 my-3"
           />
-          {errors.email && <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>}
-
+          {errors.email && (
+            <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
+          )}
           <input
-            type="password"
-            placeholder="Password"
             {...register("password")}
-            className="w-full mb-2 px-4 py-3 rounded-lg bg-[var(--color-dark-3)]
-                       text-gray-100 placeholder-gray-500 border border-white/10
-                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500
-                       outline-none transition shadow-sm hover:shadow-md"
+            type="text"
+            placeholder="Password"
+            className="w-full px-4 py-3 placeholder-text-gray-400 bg-dark-3 rounded-lg outline-none text-gray-100 my-3"
           />
-          {errors.password && <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>}
-
-          {serverError && <p className="text-red-500 text-sm mb-2">{serverError}</p>}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700
-                       transition text-white text-lg shadow-md hover:shadow-lg"
-          >
-            {isSubmitting ? "Signing In..." : "Sign In"}
+          {errors.password && (
+            <p className="text-red-500 text-sm mb-2">
+              {errors.password.message}
+            </p>
+          )}
+          <button className="bg-primary w-full my-2 py-2 text-white rounded-lg cursor-pointer">
+            Sign in
           </button>
         </form>
 
-        {/* Sign Up Link */}
-        <div className="my-4 text-center text-gray-300 text-sm">
-          <span>Don't have an account? </span>
-          <Link href="/signup" className="ml-2 text-blue-500 hover:underline font-medium">
-            Sign Up
+        <div className="my-3 text-center text-white">
+          <span>Don&apos;t have an account?</span>
+          <Link href="/signup" className="ml-2 text-primary">
+            Signup
           </Link>
         </div>
-
       </div>
     </div>
   );
