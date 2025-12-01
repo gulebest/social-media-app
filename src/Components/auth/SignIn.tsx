@@ -88,7 +88,7 @@ export default function SigninComponent() {
             </p>
           )}
           <button className="bg-primary w-full my-2 py-2 text-white rounded-lg cursor-pointer">
-            Sign in
+           {isSubmitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
