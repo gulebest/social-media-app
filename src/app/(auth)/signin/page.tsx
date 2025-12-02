@@ -1,6 +1,6 @@
 // src/app/(auth)/signin/page.tsx
 import React from "react";
-import SignIn from "../../../Components/auth/SignIn";
+import SignIn from "../../../components/auth/SignIn";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 

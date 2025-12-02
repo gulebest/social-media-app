@@ -1,13 +1,12 @@
-// app/page.tsx
-export default function HomePage() {
-  return (
-    <main className="min-h-screen px-6 py-10">
-      <h1 className="text-5xl font-bold text-primary mb-4">
-        Home
-      </h1>
-      <p className="text-dark-2 text-lg">
-        Welcome to your app!
-      </p>
-    </main>
-  );
+import { redirect } from "next/navigation";
+import { auth } from "../auth";
+import SignIn from "../components/auth/SignIn";
+
+export default async function Home() {
+  const session = await auth();
+
+  if (session) {
+    redirect("/home");
+  }
+  return <SignIn/>;
 }
