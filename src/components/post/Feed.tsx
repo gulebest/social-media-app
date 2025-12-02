@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import Post from "./Post";
 import { useInfinitePosts } from "../../../custom-hooks/usePost";
 import { useInView } from "react-intersection-observer";
-import PostSkeleton from "../../components/skeletons/PostSkeleton";
+import PostSkeleton from "../skeletons/PostSkeleton";
 
 export default function Feed({userId}:{userId:string}) {
   const { inView, ref } = useInView();

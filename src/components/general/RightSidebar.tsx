@@ -5,7 +5,7 @@ import { useFollowSuggestions } from "../../../custom-hooks/useUsers";
 import Link from "next/link";
 import { useFollowUser } from "../../../custom-hooks/useFollow";
 import { useSession } from "next-auth/react";
-import RightsidebarSkeleton from "../skeletons/RightsidebarSkeleton";
+import RightSidebarSkeleton from "../skeletons/RightSidebarSkeleton";
 
 export default function Rightsidebar() {
   const { data, error, isError, isLoading } = useFollowSuggestions();
@@ -19,7 +19,7 @@ export default function Rightsidebar() {
   };
 
   if (isLoading) return (
-    <RightsidebarSkeleton/>
+    <RightSidebarSkeleton/>
   )
   if (isError) return <p className="text-gray-300">{error.message}</p>;
 

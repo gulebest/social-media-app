@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function RightsidebarSkeleton() {
+export default function RightSidebarSkeleton() {
   return (
     <aside className="min-h-screen fixed top-17 right-20 w-[300px] hidden xl:block">
         {[...Array(3)].map((_,index) => (
