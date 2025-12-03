@@ -1,6 +1,5 @@
 {
   "/(protected)/home/page": "app/(protected)/home/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/api/auth/user/route": "app/api/auth/user/route.js",
   "/api/notifications/unread-count/route": "app/api/notifications/unread-count/route.js",

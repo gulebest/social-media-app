@@ -10,14 +10,15 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const authUserId = session.user.id;
+    const me = session.user.id;
 
-    // Find users that the logged-in user is NOT following
     const users = await prisma.user.findMany({
       where: {
-        id: { not: authUserId }, // exclude logged-in user
+        id: { not: me },
+
+        // I DO NOT follow them
         followers: {
-          none: { followerId: authUserId }, // I am NOT following them
+          none: { followerId: me },
         },
       },
       select: {
@@ -25,33 +26,31 @@ export async function GET() {
         name: true,
         username: true,
         image: true,
-        // Check if THEY follow ME -> Follow Back
-        followers: {
-          where: { followerId: authUserId },
+
+        // They follow ME (follow back)
+        following: {
+          where: { followingId: me },
           select: { id: true },
         },
       },
       take: 20,
     });
 
-    // Add "isFollowingBack" flag
-    const formatted = users.map((u) => ({
+    const formatted = users.map(u => ({
       id: u.id,
       name: u.name,
       username: u.username,
       image: u.image,
-      isFollowingBack: u.followers.length > 0,
+      isFollowingBack: u.following.length > 0,  // they follow me
     }));
 
-    // Shuffle list
-    const shuffled = formatted.sort(() => 0.5 - Math.random());
-
-    // Take 3 random suggestions
-    const suggestions = shuffled.slice(0, 3);
+    const suggestions = formatted
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3);
 
     return NextResponse.json({ users: suggestions });
   } catch (error) {
-    console.error("Error fetching user suggestions:", error);
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch user suggestions" },
       { status: 500 }
