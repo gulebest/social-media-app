@@ -3,22 +3,40 @@ import { auth } from "../../auth";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/general/Navbar";
 import LeftSidebar from "@/components/general/LeftSidebar";
-import Rightsidebar from "@/components/general/Rightsidebar";
+import RightSidebar from "@/components/general/RightSidebar";
 
 export default async function Layout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   const session = await auth();
 
   if (!session) {
     redirect("/");
   }
-  return <>
-  <Navbar />
-  <LeftSidebar />
-  <div className="text-white mx-2 md:mx-20 lg:ml-110 xl:mr-200 mt-20>">
- {children}
-  </div>
-  <Rightsidebar />
-  </>;
+
+  return (
+    <>
+      <Navbar />
+
+      {/* Main 3-column layout */}
+      <div className="mt-20 flex w-full justify-center px-4 gap-6">
+        {/* LEFT SIDEBAR */}
+        <div className="hidden lg:block w-[300px]">
+          <LeftSidebar />
+        </div>
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 max-w-[600px] text-white">
+          {children}
+        </main>
+
+        {/* RIGHT SIDEBAR */}
+        <div className="hidden xl:block w-[300px]">
+          <RightSidebar />
+        </div>
+      </div>
+    </>
+  );
 }

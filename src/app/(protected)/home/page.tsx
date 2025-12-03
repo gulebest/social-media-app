@@ -1,7 +1,9 @@
-import React from 'react'
-
+import CreatePostInput from "../../../components/post/CreatePostInput";
+import React from "react";
 export default function HomePage() {
   return (
-    <div>HomePage</div>
-  )
+    <div className="text-white">
+      <CreatePostInput />
+    </div>
+  );
 }

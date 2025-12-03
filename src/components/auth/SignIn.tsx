@@ -49,7 +49,7 @@ export default function SigninComponent() {
         <div className="flex items-center gap-2 justify-center mb-8">
           <TiSocialInstagramCircular size={40} color="#5D5FEF" />
           <span className="text-3xl font-semibold tracking-wide text-gray-400">
-            Circle
+            Momentify
           </span>
         </div>
         {/* heading */}

@@ -351,10 +351,6 @@
     margin-inline: calc(var(--spacing) * 1);
   }
 
-  .mx-2 {
-    margin-inline: calc(var(--spacing) * 2);
-  }
-
   .my-2 {
     margin-block: calc(var(--spacing) * 2);
   }
@@ -409,6 +405,10 @@
 
   .mt-12 {
     margin-top: calc(var(--spacing) * 12);
+  }
+
+  .mt-20 {
+    margin-top: calc(var(--spacing) * 20);
   }
 
   .mr-2 {
@@ -609,6 +609,10 @@
 
   .max-w-\[320px\] {
     max-width: 320px;
+  }
+
+  .max-w-\[600px\] {
+    max-width: 600px;
   }
 
   .max-w-md {
@@ -1022,12 +1026,6 @@
   }
 
   @media (width >= 48rem) {
-    .md\:mx-20 {
-      margin-inline: calc(var(--spacing) * 20);
-    }
-  }
-
-  @media (width >= 48rem) {
     .md\:h-100 {
       height: calc(var(--spacing) * 100);
     }
@@ -1040,20 +1038,8 @@
   }
 
   @media (width >= 64rem) {
-    .lg\:ml-110 {
-      margin-left: calc(var(--spacing) * 110);
-    }
-  }
-
-  @media (width >= 64rem) {
     .lg\:block {
       display: block;
-    }
-  }
-
-  @media (width >= 80rem) {
-    .xl\:mr-200 {
-      margin-right: calc(var(--spacing) * 200);
     }
   }
 

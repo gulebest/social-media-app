@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="flex items-center gap-2 justify-center">
         <TiSocialInstagramCircular size={35} color="#5D5FEF" />
         <span className="text-2xl font-semibold tracking-wide text-gray-400">
-          Circle
+          Momentify
         </span>
       </div>
 
