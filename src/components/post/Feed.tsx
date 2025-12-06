@@ -2,12 +2,10 @@
 
 import React, { useEffect, useMemo, useRef } from "react";
 import { useInView } from "react-intersection-observer";
-import { useVirtual } from "react-virtual";
 import { useInfinitePosts } from "../../../custom-hooks/usePost";
-import { useQueryClient } from "@tanstack/react-query";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import Post from "./Post";
 import PostSkeleton from "../skeletons/PostSkeleton";
-import CreatePostInput from "./CreatePostInput";
 import { Post as PostType } from "../../../types/post";
 
 type FeedProps = {
@@ -16,9 +14,11 @@ type FeedProps = {
 
 export default function Feed({ userId }: FeedProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-  const { ref: inViewRef, inView } = useInView({ threshold: 0.5 });
-  const queryClient = useQueryClient();
 
+  // Infinite scroll observer
+  const { ref: inViewRef, inView } = useInView({ threshold: 0.5 });
+
+  // Fetch posts
   const {
     data,
     isLoading,
@@ -28,70 +28,64 @@ export default function Feed({ userId }: FeedProps) {
     error,
   } = useInfinitePosts();
 
-  // Flatten all pages into a single array
+  // Flatten pages
   const posts: PostType[] = useMemo(
     () => data?.pages.flatMap((page) => page.posts) || [],
     [data]
   );
 
-  // Virtualizer setup
-  const rowVirtualizer = useVirtual({
-    size: posts.length,
-    parentRef,
-    estimateSize: React.useCallback(() => 300, []),
-    overscan: 5,
+  // 🔥 NEW virtualizer (no infinite loop)
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const virtualizer = useVirtualizer({
+    count: posts.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 360,
+    overscan: 4,
   });
 
-  // Infinite scroll trigger
+  // Load more posts when last is visible
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage]);
-
-  // Optional: refetch feed every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [queryClient]);
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) return <PostSkeleton />;
   if (error) return <p className="text-red-400">{error.message}</p>;
 
   return (
     <div>
-      {/* Post creation form */}
-      <CreatePostInput/>
-
-      {/* Virtualized feed */}
       <div ref={parentRef} className="h-[80vh] overflow-auto">
         <div
           style={{
-            height: `${rowVirtualizer.totalSize}px`,
+            height: `${virtualizer.getTotalSize()}px`,
+            width: "100%",
             position: "relative",
           }}
         >
-          {rowVirtualizer.virtualItems.map((virtualRow) => {
-            const post = posts[virtualRow.index];
+          {virtualizer.getVirtualItems().map((item) => {
+            const post = posts[item.index];
             if (!post) return null;
 
-            const isLastPost = virtualRow.index === posts.length - 1;
+            const isLastPost = item.index === posts.length - 1;
 
             return (
               <div
                 key={post.id}
                 ref={isLastPost ? inViewRef : undefined}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
+                style={{ width: "100%" }}
               >
-                <Post userId={userId} post={post} />
+                {/* Adjust padding and margin to reduce gaps */}
+                <div
+                  className="px-2"
+                  style={{
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    marginBottom: "6px",
+                  }}
+                >
+                  <Post userId={userId} post={post} />
+                </div>
               </div>
             );
           })}

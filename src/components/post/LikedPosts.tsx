@@ -16,12 +16,10 @@ export default function LikedPosts({ userId }: { userId: string }) {
     hasNextPage,
   } = useGetLikedPosts();
 
-  const likedPosts = data?.pages.flatMap((page) => page.posts) || [];
-
-  if (isLoading) return <PostSkeleton/>
+  if (isLoading) return <PostSkeleton />;
   if (isError) return <p className="text-gray-300">{error.message}</p>;
 
-  if (likedPosts.length === 0) {
+  if (!data || data.pages.every(page => page.posts.length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center px-4 bg-dark-2 p-4 rounded-2xl">
         <div className="text-gray-400 mb-4">
@@ -34,11 +32,18 @@ export default function LikedPosts({ userId }: { userId: string }) {
       </div>
     );
   }
+
   return (
     <>
-      {likedPosts.map((post) => {
-        return <Post post={post} userId={userId} key={post.id} />;
-      })}
+      {data.pages.map((page, pageIndex) =>
+        page.posts.map((post, postIndex) => (
+          <Post
+            post={post}
+            userId={userId}
+            key={`${post.id}-${pageIndex}-${postIndex}`} // unique key
+          />
+        ))
+      )}
       {hasNextPage && (
         <div className="flex justify-center mb-10">
           <button

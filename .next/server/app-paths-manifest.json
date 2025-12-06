@@ -1,1 +1,22 @@
-{}
+{
+  "/(protected)/home/page": "app/(protected)/home/page.js",
+  "/(protected)/liked-posts/page": "app/(protected)/liked-posts/page.js",
+  "/(protected)/notifications/page": "app/(protected)/notifications/page.js",
+  "/(protected)/post/[postId]/page": "app/(protected)/post/[postId]/page.js",
+  "/(protected)/profile/page": "app/(protected)/profile/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/auth/user/route": "app/api/auth/user/route.js",
+  "/api/comments/route": "app/api/comments/route.js",
+  "/api/like/[postId]/route": "app/api/like/[postId]/route.js",
+  "/api/notifications/route": "app/api/notifications/route.js",
+  "/api/notifications/unread-count/route": "app/api/notifications/unread-count/route.js",
+  "/api/posts/delete/[postId]/route": "app/api/posts/delete/[postId]/route.js",
+  "/api/posts/liked-posts/route": "app/api/posts/liked-posts/route.js",
+  "/api/posts/route": "app/api/posts/route.js",
+  "/api/posts/stats/[postId]/route": "app/api/posts/stats/[postId]/route.js",
+  "/api/users/follow/[userId]/route": "app/api/users/follow/[userId]/route.js",
+  "/api/users/suggestions/route": "app/api/users/suggestions/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}

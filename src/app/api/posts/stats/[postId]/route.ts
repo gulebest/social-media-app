@@ -1,34 +1,53 @@
 import { NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import prisma from "../../../../../../lib/prisma";
+
+// IMPORTANT: params MUST be async in Next.js 15+
 export async function GET(
   req: Request,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
     const session = await auth();
-    const postId = params.postId;
 
-    const likes = await prisma.like.count({
+    // Await params to get postId
+    const { postId } = await params;
+
+    if (!postId) {
+      return NextResponse.json(
+        { error: "Post ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Count likes
+    const likesCount = await prisma.like.count({
       where: { postId },
     });
 
-    const comments = await prisma.comment.count({
+    // Count comments
+    const commentsCount = await prisma.comment.count({
       where: { postId },
     });
 
-    const userLiked = session?.user?.id
-      ? await prisma.like.findFirst({
+    // Check if current user liked it
+    const liked = session?.user?.id
+      ? !!(await prisma.like.findFirst({
           where: { postId, userId: session.user.id },
-        })
-      : null;
+        }))
+      : false;
 
+    // RETURN payload that matches frontend
     return NextResponse.json({
-      likes,
-      comments,
-      userLiked: !!userLiked,
+      likesCount,
+      commentsCount,
+      liked,
     });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });
+    console.error("Stats error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch stats" },
+      { status: 500 }
+    );
   }
 }

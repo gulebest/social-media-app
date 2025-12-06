@@ -61,13 +61,20 @@ export function useDeletePost() {
 }
 
 // ---------------------------
-// POST STATS (like counts, comments count, etc.)
+// POST STATS (like count, comments count, liked)
 // ---------------------------
 export function usePostStats(postId: string) {
   return useQuery({
     queryKey: ["postStats", postId],
     queryFn: () => getPostStats(postId),
     enabled: !!postId,
+
+    // 🔥 Prevent overwriting optimistic like state
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
+    staleTime: Infinity,
   });
 }
 

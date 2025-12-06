@@ -16,25 +16,32 @@ type PostActionsProps = {
   postViewPage: boolean;
 };
 
-function PostActions({ userId, creatorId, postId, postViewPage }: PostActionsProps) {
+function PostActions({
+  userId,
+  creatorId,
+  postId,
+  postViewPage,
+}: PostActionsProps) {
   const { mutate: deletePostMutation } = useDeletePost();
   const { data, isLoading } = usePostStats(postId);
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const commentCount = data?.commentsCount ?? 0;
+  // Prevent undefined
+  const stats = data || { likesCount: 0, commentsCount: 0, liked: false };
+  const commentCount = stats.commentsCount ?? 0;
 
-  // Delete post handler with type-safe React Query invalidation
   const handleDeletePost = useCallback(() => {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
     deletePostMutation(postId, {
       onSuccess: () => {
         if (postViewPage) router.replace("/");
+
         toast("Post deleted successfully", {
           style: { background: "#5D5FEF", color: "white" },
         });
-        // ✅ Type-safe invalidation in React Query v4
+
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       },
     });
@@ -44,10 +51,8 @@ function PostActions({ userId, creatorId, postId, postViewPage }: PostActionsPro
 
   return (
     <div className="mt-4 mx-1 flex gap-6">
-      {/* Like Button with real-time updates */}
-      <LikeButton postId={postId} postStats={data} />
+      <LikeButton postId={postId} postStats={stats} />
 
-      {/* Comment Button */}
       <button
         aria-label="View comments"
         className="text-gray-300 cursor-pointer flex items-center gap-1"
@@ -56,7 +61,6 @@ function PostActions({ userId, creatorId, postId, postViewPage }: PostActionsPro
         <span className="text-xs">{commentCount}</span>
       </button>
 
-      {/* Delete Button (only for post creator) */}
       {userId === creatorId && (
         <button
           aria-label="Delete post"
