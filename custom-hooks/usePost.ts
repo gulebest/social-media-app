@@ -4,38 +4,51 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createPost, deletePost, getLikedPosts, getPosts, getPostStats } from "../services/post";
 
+import {
+  createPost,
+  deletePost,
+  getLikedPosts,
+  getPosts,
+  getPostStats,
+} from "../services/post";
+
+// ---------------------------
+// CREATE POST
+// ---------------------------
 export function useCreatePost() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: FormData) => createPost(data),
     onSuccess: () => {
-      //invalidate the post query
       queryClient.invalidateQueries({ queryKey: ["posts", "infinite"] });
     },
   });
 }
 
+// ---------------------------
+// INFINITE POSTS (FEED)
+// ---------------------------
 export function useInfinitePosts() {
   return useInfiniteQuery({
     queryKey: ["posts", "infinite"],
-    queryFn: getPosts,
+    queryFn: ({ pageParam = 1 }) => getPosts(pageParam),
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      //return the nextpage number if there are more pages alse we return undefinded
-      return lastPage.pagination.hasNextPage
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasNextPage
         ? lastPage.pagination.currentPage + 1
-        : undefined;
-    },
+        : undefined,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    refetchInterval: false,
     retry: 1,
   });
 }
 
+// ---------------------------
+// DELETE POST
+// ---------------------------
 export function useDeletePost() {
   const queryClient = useQueryClient();
 
@@ -47,29 +60,32 @@ export function useDeletePost() {
   });
 }
 
-export function usePostStats(postId:string){
+// ---------------------------
+// POST STATS (like counts, comments count, etc.)
+// ---------------------------
+export function usePostStats(postId: string) {
   return useQuery({
-    queryFn:() => getPostStats(postId),
-    queryKey:["postStats",postId],
-    enabled:!!postId
-  })
+    queryKey: ["postStats", postId],
+    queryFn: () => getPostStats(postId),
+    enabled: !!postId,
+  });
 }
 
-export function useGetLikedPosts(){
+// ---------------------------
+// INFINITE LIKED POSTS
+// ---------------------------
+export function useGetLikedPosts() {
   return useInfiniteQuery({
-    queryKey:["liked-posts"],
-    queryFn:getLikedPosts,
+    queryKey: ["liked-posts"],
+    queryFn: ({ pageParam = 1 }) => getLikedPosts(pageParam),
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      //return the nextpage number if there are more pages alse we return undefinded
-      return lastPage.pagination.hasNextPage
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasNextPage
         ? lastPage.pagination.currentPage + 1
-        : undefined;
-    },
+        : undefined,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    refetchInterval: false,
-    retry: 1,    
-  })
+    retry: 1,
+  });
 }

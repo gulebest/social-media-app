@@ -25,7 +25,7 @@ export default function Rightsidebar() {
 
   const users = data?.users ?? [];
   return (
-    <aside className="min-h-screen fixed top-17 right-20 w-[300px] hidden xl:block">
+    <aside className="min-h-screen fixed top-17 right-2 w-[300px] hidden xl:block">
       {users.length === 0 ? (
         <div className="bg-dark-3 mt-4 p-4 rounded-2xl text-center text-gray-400">
           <p>No user suggestions right now 👋</p>

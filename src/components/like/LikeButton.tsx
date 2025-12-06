@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react"; 
 import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useLikePost, useUnlikePost } from "../../../custom-hooks/useLike";
@@ -15,44 +15,36 @@ export default function LikeButton({ postId, postStats }: LikeButtonProps) {
   const { mutate: unlikePostMutation, isPending: unliking } = useUnlikePost();
   const session = useSession();
   const userId = session.data?.user?.id;
-  const hasLiked = postStats.liked;
-  const likesCount = postStats.likesCount;
+
   const queryClient = useQueryClient();
+
+  const hasLiked = Boolean(postStats?.liked);
+  const likesCount = Number(postStats?.likesCount ?? 0); // ✅ FIXED
 
   const handleLikeToggle = () => {
     if (!userId) return;
 
-    //store previous stats
     const previousStats = queryClient.getQueryData(["postStats", postId]);
 
-    //optimistically update both properties in one call
     queryClient.setQueryData<PostStats>(["postStats", postId], (old) => {
-      if (!old) {
-        return {
-          ...postStats,
-          liked: !hasLiked,
-          likesCount: hasLiked ? Math.max(0, likesCount - 1) : likesCount + 1,
-        };
-      }
+      const current = old || postStats;
 
       return {
-        ...old,
+        ...current,
         liked: !hasLiked,
         likesCount: hasLiked
-          ? Math.max(0, old.likesCount - 1)
-          : old.likesCount + 1,
+          ? Math.max(0, Number(current.likesCount) - 1)
+          : Number(current.likesCount) + 1,
       };
     });
 
     if (hasLiked) {
-      //unlike mutation
       unlikePostMutation(postId, {
         onError: () => {
           queryClient.setQueryData(["postStats", postId], previousStats);
         },
       });
     } else {
-      //like mutation
       likePostMutation(
         { postId, userId },
         {
@@ -65,6 +57,7 @@ export default function LikeButton({ postId, postStats }: LikeButtonProps) {
   };
 
   const loading = liking || unliking;
+
   return (
     <button
       disabled={loading}
@@ -74,7 +67,7 @@ export default function LikeButton({ postId, postStats }: LikeButtonProps) {
       }`}
     >
       {hasLiked ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
-      <span className="text-xs">{likesCount}</span>
+      <span className="text-xs">{likesCount}</span> {/* SAFE */}
     </button>
   );
 }

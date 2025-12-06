@@ -13,9 +13,9 @@ export default function LeftSidebar() {
   if (isError) return <h1 className="text-gray-300">{error.message}</h1>;
 
   return (
-    <aside className="min-h-screen fixed top-17 left-20 w-[350px] hidden lg:block">
-      <div className="bg-dark-3 rounded-2xl m-5 p-4">
-        <div className="flex gap-3 items-center justify-center">
+    <aside className="min-h-screen fixed top-17 left-2 w-[350px] hidden lg:block">
+      <div className="bg-dark-3 rounded-2xl m-8 p-4">
+        <div className="flex gap-5 items-center justify-center">
           <div className="text-center text-gray-200">
             <p className="font-semibold">{user?._count.followers}</p>
             <p className="font-normal text-gray-400 text-xs">Followers</p>
