@@ -22,6 +22,7 @@ export default async function PostViewPage({
   if (!post) {
     notFound();
   }
+
   return (
     <>
       <div className="bg-dark-3 p-4 rounded-2xl my-6">
@@ -37,21 +38,19 @@ export default async function PostViewPage({
           <div>
             <p>{post.author.name}</p>
             <div>
-              <span className="mr-2 text-sm font-normal text-gray-500">
-                @{post.author.username}
-              </span>
-              <span className="text-primary text-sm font-semibold">
-                {moment(post.createdAt).fromNow()}
-              </span>
+              <span className="mr-2 text-sm font-normal text-gray-500">@{post.author.username}</span>
+              <span className="text-primary text-sm font-semibold">{moment(post.createdAt).fromNow()}</span>
             </div>
           </div>
         </div>
+
         {post.text && <p className="py-4 text-gray-200 text-sm">{post.text}</p>}
+
         {post.image && (
           <div className="relative w-full h-80 sm:h-100 md:h-120">
             <Image
               src={post.image}
-              alt="profile-pic"
+              alt="post-image"
               fill
               className="object-cover rounded-2xl"
             />
@@ -68,11 +67,11 @@ export default async function PostViewPage({
         )}
       </div>
 
-      {/* comment input */}
-      <CommentInput postId={post.id}/>
+      {/* Comment input area */}
+      <CommentInput postId={post.id} />
 
-      {/* comments */}
-      <Comments postId={post.id}/>
+      {/* Comments list */}
+      <Comments postId={post.id} />
     </>
   );
 }

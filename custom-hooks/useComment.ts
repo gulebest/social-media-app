@@ -1,14 +1,5 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import {
-  createComment,
-  deleteComment,
-  getComments, 
-} from "../services/comment";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createComment, deleteComment, getComments } from "../services/comment";
 
 export function useCreateComment() {
   const queryClient = useQueryClient();
@@ -31,7 +22,6 @@ export function useInfiniteComments(postId: string) {
     queryFn: ({ pageParam = 1 }) => getComments({ pageParam, postId }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      //return the nextpage number if there are more pages alse we return undefinded
       return lastPage.pagination.hasNextPage
         ? lastPage.pagination.currentPage + 1
         : undefined;
@@ -44,7 +34,6 @@ export function useInfiniteComments(postId: string) {
     enabled: !!postId,
   });
 }
-
 
 export function useDeleteComment() {
   const queryClient = useQueryClient();

@@ -14,11 +14,8 @@ type FeedProps = {
 
 export default function Feed({ userId }: FeedProps) {
   const parentRef = useRef<HTMLDivElement>(null);
-
-  // Infinite scroll observer
   const { ref: inViewRef, inView } = useInView({ threshold: 0.5 });
 
-  // Fetch posts
   const {
     data,
     isLoading,
@@ -28,13 +25,11 @@ export default function Feed({ userId }: FeedProps) {
     error,
   } = useInfinitePosts();
 
-  // Flatten pages
   const posts: PostType[] = useMemo(
     () => data?.pages.flatMap((page) => page.posts) || [],
     [data]
   );
 
-  // 🔥 NEW virtualizer (no infinite loop)
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: posts.length,
@@ -43,7 +38,6 @@ export default function Feed({ userId }: FeedProps) {
     overscan: 4,
   });
 
-  // Load more posts when last is visible
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -58,7 +52,7 @@ export default function Feed({ userId }: FeedProps) {
       <div ref={parentRef} className="h-[80vh] overflow-auto">
         <div
           style={{
-            height: `${virtualizer.getTotalSize()}px`,
+            height: virtualizer.getTotalSize(),
             width: "100%",
             position: "relative",
           }}
@@ -70,20 +64,8 @@ export default function Feed({ userId }: FeedProps) {
             const isLastPost = item.index === posts.length - 1;
 
             return (
-              <div
-                key={post.id}
-                ref={isLastPost ? inViewRef : undefined}
-                style={{ width: "100%" }}
-              >
-                {/* Adjust padding and margin to reduce gaps */}
-                <div
-                  className="px-2"
-                  style={{
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                    marginBottom: "6px",
-                  }}
-                >
+              <div key={post.id} ref={isLastPost ? inViewRef : undefined}>
+                <div className="px-2 mb-[6px]">
                   <Post userId={userId} post={post} />
                 </div>
               </div>

@@ -1,170 +1,118 @@
 "use client";
+
 import Image from "next/image";
-import React, { useRef, useState } from "react";
-import { BsFillSendFill } from "react-icons/bs";
-import { IoMdPhotos } from "react-icons/io";
+import React, { useState, useRef, useEffect } from "react";
+import { BsSend } from "react-icons/bs";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
-import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
-import { RxCross2 } from "react-icons/rx";
-import { useCreatePost } from "../../../custom-hooks/usePost";
 import { useGetUser } from "../../../custom-hooks/useUser";
+import { useSession } from "next-auth/react";
+import { CreateCommentData } from "../../../types/comments";
+import { useCreateComment } from "../../../custom-hooks/useComment";
+import dynamic from "next/dynamic";
 
-export default function CreatePostInput() {
-  const [imagePreview, setImagePreview] = useState<null | string>(null);
-  const [postImage, setPostImage] = useState<null | File>(null);
-  const [text, setText] = useState("");
-  const [showPicker, setShowPicker] = useState(false);
-  const fileRef = useRef<null | HTMLInputElement>(null);
-  const { mutate: createPostMutation, isPending } = useCreatePost();
-  const { isLoading, data: user } = useGetUser();
+// Emoji Picker
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-  const onEmojiClick = (emojidata: EmojiClickData) => {
-    setText((prev) => prev + emojidata.emoji);
-  };
+export default function CommentInput({ postId }: { postId: string }) {
+  const { data: user, isLoading } = useGetUser();
+  const [content, setContent] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPostImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  const { mutate: createCommentMutation, isPending } = useCreateComment();
+  const session = useSession();
+  const userId = session.data?.user?.id;
 
-  const removeImage = () => {
-    setImagePreview(null);
-    if (fileRef.current) fileRef.current.value = "";
-    setPostImage(null);
-  };
+  // Auto-resize textarea like Instagram
+  useEffect(() => {
+    if (!textareaRef.current) return;
 
-  const handleCreatePost = () => {
-    if (!text.trim() && !postImage) {
-      return;
-    }
+    textareaRef.current.style.height = "32px";
+    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+  }, [content]);
 
-    const formData = new FormData();
-    if (text) formData.append("text", text);
-    if (postImage) formData.append("image", postImage);
+  // Submit comment
+  const handleSubmit = () => {
+    if (!userId || !content.trim()) return;
 
-    createPostMutation(formData, {
+    const commentData: CreateCommentData = {
+      userId,
+      postId,
+      content: content.trim(),
+    };
+
+    createCommentMutation(commentData, {
       onSuccess: () => {
-        setText("");
-        setImagePreview(null);
-        setPostImage(null);
-      },
-      onError: (error) => {
-        console.log("Failed to create post:", error.message);
+        setContent("");
+        setShowEmojiPicker(false);
       },
     });
   };
 
   return (
-    <div
-      className={`bg-dark-3 p-4 rounded-2xl ${isPending ? "opacity-60" : ""}`}
-    >
-      {showPicker && (
-        <div className="fixed z-10 top-60 left-1/2 w-[90%] max-w-2xl -translate-x-1/2">
-          <EmojiPicker
-            theme={Theme.DARK}
-            onEmojiClick={onEmojiClick}
-            style={{
-              width: "100%",
-              background: "black",
-            }}
-          />
-        </div>
-      )}
-
-      <div className="flex gap-2">
-        <div className="relative w-12 h-12 shrink-0">
-          {isLoading ? (
-            <div className="animate-pulse rounded-full w-12 h-12 bg-dark-4"></div>
-          ) : (
+    <div className="bg-dark-3 px-4 py-3 rounded-2xl relative border border-dark-4/40">
+      <div className="flex items-start gap-3">
+        {/* Avatar */}
+        {isLoading ? (
+          <div className="w-10 h-10 rounded-full bg-dark-4 animate-pulse" />
+        ) : (
+          <div className="relative w-10 h-10 shrink-0 rounded-full overflow-hidden">
             <Image
-              src={user?.image || "/images/profile.jpg"}
-              alt="profile-pic"
+              src={user?.image || "/images/avatar.png"}
+              alt="profile"
               fill
-              className="object-cover rounded-full border-4 border-dark-4"
+              className="object-cover"
             />
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="flex-1">
+        {/* Comment Box */}
+        <div className="flex-1 relative">
           <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="What's on your mind?"
-            className="bg-dark-2 w-full p-2 rounded-2xl outline-none resize-none"
+            ref={textareaRef}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={1}
+            placeholder="Add a comment..."
+            className="
+              w-full bg-dark-2 text-gray-200
+              rounded-2xl px-12 py-3 pr-14
+              overflow-hidden resize-none outline-none
+              border border-dark-4/40 placeholder-gray-500
+            "
           />
 
-          {imagePreview && (
-            <div className="h-60 md:h-100 rounded-2xl overflow-hidden my-5 relative">
-              <Image
-                src={imagePreview}
-                alt="preview-image"
-                width={500}
-                height={500}
-                className="w-full h-full object-cover"
+          {/* Emoji button */}
+          <button
+            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            className="absolute top-1/2 -translate-y-1/2 left-4 text-gray-400 hover:text-gray-200 transition"
+          >
+            <MdOutlineEmojiEmotions size={22} />
+          </button>
+
+          {/* Send button */}
+          <button
+            onClick={handleSubmit}
+            disabled={isPending}
+            className="
+              absolute top-1/2 -translate-y-1/2 right-4
+              text-blue-500 hover:text-blue-400 transition
+              disabled:text-gray-600
+            "
+          >
+            <BsSend size={20} />
+          </button>
+
+          {/* Emoji Picker */}
+          {showEmojiPicker && (
+            <div className="absolute left-0 bottom-full mb-2 z-50 animate-fade-in">
+              <EmojiPicker
+                onEmojiClick={(emojiData) =>
+                  setContent((prev) => prev + emojiData.emoji)
+                }
               />
-              <button
-                onClick={removeImage}
-                aria-label="Remove image"
-                className="absolute top-5 right-5 bg-gray-600 w-10 h-10 text-2xl rounded-full opacity-50 cursor-pointer grid place-items-center"
-              >
-                <RxCross2 />
-              </button>
             </div>
           )}
-
-          <div className="mt-2 flex gap-4">
-            {/* Photo button */}
-            <button
-              onClick={() => fileRef.current?.click()}
-              aria-label="Upload photo"
-              className="text-green-700 flex items-center gap-2 bg-dark-2 px-4 py-2 rounded-xl cursor-pointer"
-            >
-              <IoMdPhotos size={20} />
-              <span className="text-sm text-gray-400">Photo</span>
-            </button>
-
-            {/* File input with label */}
-            <label htmlFor="postImage" className="hidden">
-              Upload image
-            </label>
-            <input
-              id="postImage"
-              type="file"
-              accept="images/*"
-              ref={fileRef}
-              aria-label="Upload image"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-
-            {/* Emoji button */}
-            <button
-              onClick={() => setShowPicker(!showPicker)}
-              aria-label="Toggle emoji picker"
-              className="text-yellow-800 flex items-center gap-2 bg-dark-2 px-4 py-2 rounded-xl cursor-pointer"
-            >
-              <MdOutlineEmojiEmotions size={20} />
-              <span className="text-sm text-gray-400">Emoji</span>
-            </button>
-
-            {/* Post button */}
-            <button
-              disabled={isPending}
-              onClick={handleCreatePost}
-              aria-label="Create post"
-              className={`text-blue-700 flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer ${
-                text.trim().length > 0 || postImage ? "bg-dark-2" : "bg-dark-4"
-              }`}
-            >
-              <BsFillSendFill size={20} />
-              <span className="text-sm text-gray-400">
-                {isPending ? "Posting..." : "Post"}
-              </span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
