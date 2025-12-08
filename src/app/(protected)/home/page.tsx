@@ -1,15 +1,16 @@
 import React from "react";
 import Feed from "@/components/post/Feed";
 import { auth } from "../../../auth";
-import CreatePostInput from "@/components/comment/CommentInput";
+import CreatePostInput from "@/components/post/CreatePostInput";
 
 export default async function HomePage() {
   const session = await auth();
 
   return (
     <div className="max-w-2xl gap-10 mx-auto p-4">
+
       {/* Post creation form */}
-      {session?.user?.id && <CreatePostInput/>}
+      {session?.user?.id && <CreatePostInput />}
 
       {/* Feed for logged-in users */}
       {session?.user?.id ? (
