@@ -18,7 +18,7 @@ export default function LikeButton({ postId, postStats }: LikeButtonProps) {
   const userId = session.data?.user?.id;
   const queryClient = useQueryClient();
 
-  // ✅ ALWAYS read the latest value from cache (fixes NaN + stale UI)
+  // ALWAYS read the latest value from cache (fixes NaN + stale UI)
   const cachedStats =
     queryClient.getQueryData<PostStats>(["postStats", postId]) || postStats;
 
