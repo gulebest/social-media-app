@@ -11,7 +11,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "text" },
       },
       authorize: async (credentials) => {
-        //type check vali
+        //type check validation
         if (
           typeof credentials.email !== "string" ||
           typeof credentials.password !== "string"
