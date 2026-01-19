@@ -13,7 +13,7 @@ export async function getCurrentUser(): Promise<User> {
     }
   }
 }
-
+//gule
 export async function updateUser(data: FormData) {
   try {
     const response = await axios.patch("/api/auth/user", data, {
